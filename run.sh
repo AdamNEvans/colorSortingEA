@@ -2,6 +2,7 @@
 
 TEMP_DIR="temp"
 SOLUTION_DIR="solutions"
+LOGS_DIR="logs"
 
 # ==============================================================================
 # read command line args
@@ -22,6 +23,10 @@ fi
 
 if [ ! -d "$SOLUTION_DIR" ]; then
   mkdir "$SOLUTION_DIR"
+fi
+
+if [ ! -d "$LOGS_DIR" ]; then
+  mkdir "$LOGS_DIR"
 fi
 
 # ==============================================================================

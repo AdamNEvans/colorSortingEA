@@ -1,6 +1,10 @@
-/solutions/*
-/configurations/*
-/logs/*
-/mylogs/*
-/visualizer/images/*
-/temp
+# Regular files
+main
+
+# Run-specific and user-specific folders
+solutions/
+configurations/
+logs/
+mylogs/
+visualizer/images/
+temp/
