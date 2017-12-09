@@ -22,4 +22,4 @@ The visualizer program provides a few examples of how a given evaluation tree pe
 
 To run:
 
-    python3 visualizer.py < <treeFile>
+    viz.sh <treeFile>
