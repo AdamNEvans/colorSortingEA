@@ -1,3 +1,4 @@
+import os
 import sys
 import random
 import utils
@@ -5,14 +6,24 @@ from node import Node
 from color import Color
 
 
-random.seed()
-
-nodeList = [line.strip() for line in sys.stdin.readlines()]
-tree = Node(nodeList, 0)
-
 nimages = 3
 ncolors = 1000
+directory = "./images"
 
+random.seed()
+
+# read in the tree
+nodeList = [line.strip() for line in sys.stdin.readlines()]
+tree = Node(nodeList)
+
+# make sure we can output our fancy images
+if not os.path.exists(directory):
+	os.mkdir(directory)
+elif not os.path.isdir(directory):
+	print("ERROR: Cannot create output directory '{}'".format(directory))
+	sys.exit(1)
+
+# generate the sorted color images
 for i in range(nimages):
 	# Generate the list of random colors to sort
 	list = []
@@ -26,6 +37,5 @@ for i in range(nimages):
 	colors = [x[1] for x in list]
 
 	# save the sort as an image
-	directory = "./images"
 	filename = 'sorted_' + str(i) + '.png'
 	utils.listToPNG(colors, directory, filename)

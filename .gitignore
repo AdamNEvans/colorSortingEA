@@ -1,5 +1,6 @@
-# Regular files
+# Generated files
 main
+visualizer/__pycache__/
 
 # Run-specific and user-specific folders
 solutions/

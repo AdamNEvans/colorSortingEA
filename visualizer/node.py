@@ -29,13 +29,17 @@ class Node:
 					NODE_MIN, NODE_MAX]
 	all_types = leaf_types + bin_op_types
 	
-	# ====================================================================
-	# nodeTypes: list of strings which match the values of the node type
-	# constants declared above. For constant nodes, the format is:
-	#    "NODE_CONST <value>"
-	# ====================================================================
+	# =========================================================================
+	# nodeTypes: List of strings which match the values of the node type
+	#            constants declared above. For constant nodes, the format is:
+	#            "NODE_CONST <value>"
+	# index: The index in nodeTypes for the type of this node. Used instead of
+	#        defaulting to the first element so that slices don't have to be
+	#        created when creating the node's children. Plus it gives a unique
+	#        id to every node in the tree, which could be handy.
+	# =========================================================================
 
-	def __init__(self, nodeTypes, index):
+	def __init__(self, nodeTypes, index=0):
 		words = nodeTypes[index].split(" ")
 		self.type = words[0];   # what operation/value this node represents
 		self.left = None        # left child node
@@ -56,8 +60,11 @@ class Node:
 			self.size = 1 + self.left.size + self.right.size
 	
 	# ====================================================================
+	# color: The color to compute a value for
+	# ====================================================================
 
 	def eval(self, color):
+		# Leaf nodes
 		if self.type == NODE_RED:          return color.red
 		elif self.type == NODE_GREEN:      return color.green
 		elif self.type == NODE_BLUE:       return color.blue
@@ -69,6 +76,7 @@ class Node:
 		elif self.type == NODE_LUMINOSITY: return color.luminosity
 		elif self.type == NODE_CONST:      return self.value
 
+		# Operator nodes
 		elif self.type == NODE_ADD:
 			return self.left.eval(color) + self.right.eval(color)
 		elif self.type == NODE_SUB:
