@@ -3,9 +3,7 @@ main
 visualizer/__pycache__/
 
 # Run-specific and user-specific folders
-solutions/
-configurations/
-logs/
-mylogs/
+solutions/*.sol
+configurations/*.cfg
+logs/*.log
 visualizer/images/
-temp/

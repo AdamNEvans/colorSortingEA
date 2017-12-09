@@ -1,6 +1,5 @@
 #!/bin/bash
 
-TEMP_DIR="temp"
 SOLUTION_DIR="solutions"
 LOGS_DIR="logs"
 
@@ -17,10 +16,6 @@ fi
 
 # ==============================================================================
 # check for the required directories existing and create them if necessary
-if [ ! -d "$TEMP_DIR" ]; then
-  mkdir "$TEMP_DIR"
-fi
-
 if [ ! -d "$SOLUTION_DIR" ]; then
   mkdir "$SOLUTION_DIR"
 fi
