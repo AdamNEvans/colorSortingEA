@@ -36,7 +36,6 @@ using std::find;
 
 // generic functions
 static void writeLogEntry(FILE* file, Member** members, int size);
-static void writeMylogEntry(FILE* file);
 static void deleteMember(Member* dude);
 static bool evaluateMember(Member* dude, Config* config);
 static int tournament(Member** members, int start, int end, int nparticipants);
@@ -88,7 +87,6 @@ int (*survivorSelection[SURVIVOR_NUM_TYPES])(Member** members, int size, Populat
 
 static Config* mainConfig = NULL;     // the main config object
 static Member** population = NULL;    // the EA population
-static Member* bestMember = NULL;     // the best dude found during the current run
 
 static int populationSize = 0;        // current size of the EA population
 static int totalEvals = 0;            // total number of evals so far
@@ -113,21 +111,14 @@ void executeEA(Config* inconfig)
   // Prepare the global files we need
   // ---------------------------------------------
   FILE* logfile = fopen(mainConfig->logFilename, "w");
-  FILE* mylogfile = fopen(mainConfig->mylogFilename, "w");
 
   if (logfile == NULL)
   {
     printf("ERROR: Could not open log file. Aborting...\n");
     exit(1);
   }
-  if (mylogfile == NULL)
-  {
-    printf("ERROR: Could not open mylog file. Aborting...\n");
-    exit(1);
-  }
   
   fprintf(logfile, "Result Log\n\n");
-  fprintf(mylogfile, "My Log\n");
   mainConfig->print(logfile);
   
   // ---------------------------------------------
@@ -140,7 +131,6 @@ void executeEA(Config* inconfig)
     printf("                          Run %d\n", run + 1);
     printf("====================================================================\n");
     fprintf(logfile, "\nRun %d\n", run + 1);
-    fprintf(mylogfile, "\nRun %d\n", run + 1);
     
     totalEvals = 0;
     
@@ -158,7 +148,6 @@ void executeEA(Config* inconfig)
     
     while (!termination[mainConfig->terminationType](population, populationSize))
     {
-//      printf("maxEvals=%d  currentEvals=%d\n", mainConfig->nevals, 
       printf("------------------------ generation %d -----------------------\n", generation);
       
       type = mainConfig->mainPopulation->parentSelectionType;
@@ -167,34 +156,14 @@ void executeEA(Config* inconfig)
       type = mainConfig->mainPopulation->survivorSelectionType;
       populationSize = survivorSelection[type](population, populationSize, mainConfig->mainPopulation);
       
-      // ---------------------------------------------
-      // check for the best member (for mylog purposes)
-      for (int i = 0; i < populationSize; i++)
-      {
-        if ((bestMember == NULL) || (population[i]->fitness > bestMember->fitness))
-        {
-          Member* m = bestMember;
-          
-          // need to change bestMember before calling deleteMember()
-          bestMember = population[i];
-          deleteMember(m);
-        }
-      }
-      
-      // -------------------------------------
-      // make the log entries
       writeLogEntry(logfile, population, populationSize);
-      writeMylogEntry(mylogfile);
       
       generation++;
     }
     
     // ---------------------------------------------
-    // cleanup
+    // per-run cleanup
     // ---------------------------------------------
-    bestMember = NULL;    // TODO: why set to NULL then delete?
-    deleteMember(bestMember);
-    
     for (int i = 0; i < populationSize; i++)
     {
       delete population[i];
@@ -207,7 +176,6 @@ void executeEA(Config* inconfig)
   // clean up
   // ---------------------------------------------
   fclose(logfile);
-  fclose(mylogfile);
 }
 
 // =============================================================================
@@ -242,16 +210,6 @@ static void writeLogEntry(FILE* file, Member** members, int size)
 }
 
 // =============================================================================
-// Writes an entry in the given mylog file
-// @param file The mylog file
-// =============================================================================
-
-static void writeMylogEntry(FILE* file)
-{
-  fprintf(file, "%d\t%f\n", totalEvals, bestMember->fitness);
-}
-
-// =============================================================================
 // Deletes the given member if not used in any other tracking variables. Must
 // set the variable storing member to NULL before calling this so this function's
 // usage checks don't think it is being used where you are trying to delete it.
@@ -267,12 +225,6 @@ static void deleteMember(Member* member)
     {
       return;
     }
-  }
-  
-  // check if this member is the best member
-  if (bestMember == member)
-  {
-    return;
   }
   
   delete member;

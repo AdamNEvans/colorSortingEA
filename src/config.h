@@ -40,7 +40,6 @@ class Config
     // general fields
     char*           solutionFilename;
     char*           logFilename;
-    char*           mylogFilename;
     
     int             nruns;
     int             nevals;

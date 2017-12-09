@@ -63,7 +63,6 @@ Config::~Config()
 {
   if (solutionFilename != NULL)  free(solutionFilename);
   if (logFilename != NULL)       free(logFilename);
-  if (mylogFilename != NULL)     free(mylogFilename);
   if (mainPopulation != NULL)    delete mainPopulation;
 }
 
@@ -78,7 +77,6 @@ void Config::clear()
 {
   solutionFilename  = NULL;
   logFilename       = NULL;
-  mylogFilename     = NULL;
   mainPopulation    = NULL;
   nruns             = 0;
   nevals            = 0;
@@ -98,7 +96,6 @@ void Config::print(FILE* file)
 {
   fprintf(file, "solutionFilename:  '%s'\n", solutionFilename);
   fprintf(file, "logFilename:       '%s'\n", logFilename);
-  fprintf(file, "mylogFilename:     '%s'\n", mylogFilename);
   fprintf(file, "nruns:              %d\n",  nruns);
   fprintf(file, "nevals:             %d\n",  nevals);
   fprintf(file, "seed:               %lu\n", seed);
@@ -132,8 +129,6 @@ void Config::setVariables(map<string, map<string, string> >& categories)
        solutionFilename = stringToCString(pairs["solutionFilename"]);
   if (keyExists(pairs, "logFilename"))
        logFilename = stringToCString(pairs["logFilename"]);
-  if (keyExists(pairs, "mylogFilename"))
-       mylogFilename = stringToCString(pairs["mylogFilename"]);
   
   // ---------------------------------------------
   // general EA variables
