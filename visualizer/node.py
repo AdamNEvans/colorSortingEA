@@ -51,8 +51,8 @@ class Node:
 			if self.type == NODE_CONST:
 				self.value = float(words[1])
 		elif self.type in self.bin_op_types:
-			self.left = Node(nodeTypes, index + 1)
-			self.right = Node(nodeTypes, index + 1 + self.left.size)
+			self.left = Node(nodeTypes, self.index + 1)
+			self.right = Node(nodeTypes, self.index + self.left.size + 1)
 			self.size = 1 + self.left.size + self.right.size
 	
 	# ====================================================================
