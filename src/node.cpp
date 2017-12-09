@@ -465,7 +465,7 @@ void Node::print(FILE* file, int level)
 {
   if (level > 0)    // using this check just to make the compiler happy
   {
-    char spaces[51];       // 25 level capability
+    char spaces[2001];       // 1000 level capability
     memset(&spaces[0], ' ', level * 2);
     spaces[level * 2] = '\0';
     
