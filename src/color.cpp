@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "color.h"
 
@@ -33,7 +34,11 @@ void initializeColorWith(Color* color, int r, int g, int b)
   float rgbMin = min(normr, min(normg, normb));
   float delta = rgbMax - rgbMin;
   
+  color->value = rgbMax;
   color->lightness = (rgbMax + rgbMin) / 2;
+  color->luminosity = (LUMINOSITY_R * r) +
+                      (LUMINOSITY_G * g) +
+                      (LUMINOSITY_B * b);
   
   // ----------------------------------------
   // compute HSV and HSL stuff
@@ -61,11 +66,6 @@ void initializeColorWith(Color* color, int r, int g, int b)
     }
   }
   
-  color->value = rgbMax;
-  color->luminosity = (LUMINOSITY_R * r) +
-                      (LUMINOSITY_G * g) +
-                      (LUMINOSITY_B * b);
-  
   // ----------------------------------------
   // "percentize" everything (put in [0, 100])
   color->r *= 100;
@@ -82,8 +82,20 @@ void initializeColorWith(Color* color, int r, int g, int b)
 // ============================================================================
 //                           Color Sorting/Evaluation
 // ============================================================================
+// Compares two Color pointers
+int colorPairComparator(const void* inone, const void* intwo)
+{
+  ColorPair* one = (ColorPair*)inone;
+  ColorPair* two = (ColorPair*)intwo;
+  
+  if (one->value < two->value) return -1;
+  if (one->value > two->value) return 1;
+  return 0;
+}
 
-float sortError(ColorPair* list, int size)
+// ============================================================================
+// Returns the sum of the squared distances between consecutive colors
+float colorListRGBError(ColorPair* list, int size)
 {
   int r, g, b;
   float total = 0;
@@ -100,15 +112,28 @@ float sortError(ColorPair* list, int size)
 }
 
 // ============================================================================
-
-int colorPairComparator(const void* inone, const void* intwo)
+// Returns the sum of the squared distances between consecutive colors
+float colorListHSVError(ColorPair* list, int size)
 {
-  ColorPair* one = (ColorPair*)inone;
-  ColorPair* two = (ColorPair*)intwo;
-  
-  if (one->value < two->value) return -1;
-  if (one->value > two->value) return 1;
-  return 0;
+  int h, s, v;
+  float total = 0;
+
+  for (int i = 1; i < size; i++)
+  {
+    h = list[i].color->hue           - list[i-1].color->hue;
+    s = list[i].color->HSVSaturation - list[i-1].color->HSVSaturation;
+    v = list[i].color->value         - list[i-1].color->value;
+    total += (h * h) + (s * s) + (v * v);
+  }
+
+  return total;
+}
+
+// ============================================================================
+
+float colorListFitness(ColorPair* list, int size)
+{
+  return colorListRGBError(list, size) / size;
 }
 
 // ============================================================================

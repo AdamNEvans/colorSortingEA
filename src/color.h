@@ -58,8 +58,10 @@ Color* newColorWith(int r, int g, int b);
 void initializeColorWith(Color* color, int r, int g, int b);
 
 // color sorting/evaluation
-float sortError(ColorPair* list, int size);
 int colorPairComparator(const void* inone, const void* intwo);
+float colorListRGBError(ColorPair* list, int size);
+float colorListHSVError(ColorPair* list, int size);
+float colorListFitness(ColorPair* list, int size);
 
 // ============================================================================
 

@@ -26,7 +26,9 @@ using std::find;
 // =============================================================================
 
 
-#define MAX_FITNESS       10000000
+#define MAX_FITNESS          1000
+#define VALID_NODES          (NODE_TYPE_ALL_NODES)
+#define FITNESS_MULTIPLIER   0.001        // to get reasonable fitness values
 
 
 // =============================================================================
@@ -271,10 +273,10 @@ static bool evaluateMember(Member* member, Config* config)
     
     // evaluate the member
     qsort(list, config->evalSize, sizeof(list[0]), colorPairComparator);
-    fitness += sortError(list, config->evalSize);
+    fitness += colorListFitness(list, config->evalSize);
   }
   
-  fitness /= 1000;       // get into manageable numbers
+  fitness *= FITNESS_MULTIPLIER;       // get into manageable numbers
   fitness /= config->evalSize;
   
   // we want low error, so subtract from the max so we can "maximize fitness"
@@ -469,7 +471,7 @@ static int initializeGrow(Member** members, PopulationConfig* config)
   // create the members
   for (int i = 0; i < config->populationSize; i++)
   {
-    members[i] = new Member(config->treeHeight, NODE_TYPE_ALL_NODES);
+    members[i] = new Member(config->treeHeight, VALID_NODES);
     
     // evaluate the member
     if (!evaluateMember(members[i], mainConfig))
@@ -867,7 +869,7 @@ void EATest(Config* inconfig)
   
   for (int i = 0; i < populationSize; i++)
   {
-    population[i] = new Member(5, NODE_TYPE_ALL_NODES);
+    population[i] = new Member(5, NODE_TYPE_ALL_NODES & (~NODE_TYPE_HUE));
   }
   
   // --------------------------------------

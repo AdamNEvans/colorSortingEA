@@ -23,10 +23,10 @@ static int numOperandsForType(NodeType type);
 //                                 CONSTANTS
 // ============================================================================
 
-const int NODE_TYPE_2_OPERAND = NODE_TYPE_ADD | NODE_TYPE_SUB | NODE_TYPE_MUL |
-                                NODE_TYPE_DIV | NODE_TYPE_RAND;
-const int NODE_TYPE_INPUT =     NODE_TYPE_CONST | NODE_TYPE_RED |
-                                NODE_TYPE_GREEN | NODE_TYPE_BLUE |
+const int NODE_TYPE_BINARY_OP = NODE_TYPE_ADD | NODE_TYPE_SUB | NODE_TYPE_MUL |
+                                NODE_TYPE_DIV | NODE_TYPE_MOD | NODE_TYPE_RAND;
+const int NODE_TYPE_LEAF =      NODE_TYPE_CONST | NODE_TYPE_RED |
+                                NODE_TYPE_GREEN | NODE_TYPE_BLUE | 
                                 NODE_TYPE_HUE | NODE_TYPE_HSV_SAT |
                                 NODE_TYPE_HSL_SAT | NODE_TYPE_VALUE |
                                 NODE_TYPE_LIGHTNESS | NODE_TYPE_LUMINOSITY;
@@ -116,14 +116,14 @@ void Node::createSubtree(int inHeight, bool grow)
   
   if (maxHeight == 1)    // base case
   {
-    while ((type & NODE_TYPE_INPUT & validNodes) == 0)
+    while ((type & NODE_TYPE_LEAF & validNodes) == 0)
     {
       type = (NodeType)(1 << (random() % NODE_TYPE_NUM_TYPES));
     }
   }
   else if (!grow)
   {
-    while ((type & (~NODE_TYPE_INPUT) & validNodes) == 0)
+    while ((type & (~NODE_TYPE_LEAF) & validNodes) == 0)
     {
       type = (NodeType)(1 << (random() % NODE_TYPE_NUM_TYPES));
     }
@@ -144,6 +144,7 @@ void Node::createSubtree(int inHeight, bool grow)
     case NODE_TYPE_SUB:
     case NODE_TYPE_MUL:
     case NODE_TYPE_DIV:
+    case NODE_TYPE_MOD:
     case NODE_TYPE_RAND:
       operands[0].n = new Node(inHeight - 1, validNodes);
       operands[1].n = new Node(inHeight - 1, validNodes);
@@ -181,7 +182,7 @@ void Node::mutateSubtree(int index)
   
   // ----------------------------------------
   // otherwise, mutate a descendant
-  if ((type & NODE_TYPE_2_OPERAND) != 0)     // go deeper
+  if ((type & NODE_TYPE_BINARY_OP) != 0)     // go deeper
   {
     index--;
     int size;
@@ -401,6 +402,13 @@ float Node::eval(void* data)
       float two = operands[1].n->eval(color);
       return (two == 0 ? 0.000001 : one / two);
     }
+    case NODE_TYPE_MOD:
+    {
+      float one = operands[0].n->eval(color);
+      float two = operands[1].n->eval(color);
+      int ndivs = (int)(one / two);
+      return one - (ndivs * two);
+    }
     case NODE_TYPE_RAND:
     {
       int min = operands[0].n->eval(color);
@@ -479,6 +487,7 @@ void Node::print(FILE* file, int level)
     case NODE_TYPE_SUB:        fprintf(file, "SUB");            break;
     case NODE_TYPE_MUL:        fprintf(file, "MUL");            break;
     case NODE_TYPE_DIV:        fprintf(file, "DIV");            break;
+    case NODE_TYPE_MOD:        fprintf(file, "MOD");            break;
     case NODE_TYPE_RAND:       fprintf(file, "RAND");           break;
 
     case NODE_TYPE_CONST:      fprintf(file, "CONST %f", operands[0].f); break;
@@ -514,25 +523,9 @@ void Node::print(FILE* file, int level)
 
 static int numOperandsForType(NodeType type)
 {
-  switch (type)
+  if (type & NODE_TYPE_BINARY_OP)
   {
-    case NODE_TYPE_ADD:
-    case NODE_TYPE_SUB:
-    case NODE_TYPE_MUL:
-    case NODE_TYPE_DIV:
-    case NODE_TYPE_RAND:         return 2;
-    
-    case NODE_TYPE_CONST:
-    case NODE_TYPE_RED:
-    case NODE_TYPE_GREEN:
-    case NODE_TYPE_BLUE:
-    case NODE_TYPE_HUE:
-    case NODE_TYPE_HSV_SAT:
-    case NODE_TYPE_HSL_SAT:
-    case NODE_TYPE_VALUE:
-    case NODE_TYPE_LIGHTNESS:
-    case NODE_TYPE_LUMINOSITY:
-    case NODE_TYPE_NONE:         return 0;
+    return 2;
   }
   
   return 0;

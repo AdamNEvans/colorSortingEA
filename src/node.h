@@ -10,7 +10,7 @@
 // ==========================================================================
 
 
-#define NODE_TYPE_NUM_TYPES    15
+#define NODE_TYPE_NUM_TYPES    16
 #define NODE_TYPE_ALL_NODES    ((1 << NODE_TYPE_NUM_TYPES) - 1)
 
 
@@ -22,19 +22,20 @@ typedef enum
   NODE_TYPE_SUB          = 1 << 1,
   NODE_TYPE_MUL          = 1 << 2,
   NODE_TYPE_DIV          = 1 << 3,
-  NODE_TYPE_RAND         = 1 << 4,
+  NODE_TYPE_MOD          = 1 << 4,
+  NODE_TYPE_RAND         = 1 << 5,
   
   // inputs
-  NODE_TYPE_CONST        = 1 << 5,
-  NODE_TYPE_RED          = 1 << 6,
-  NODE_TYPE_GREEN        = 1 << 7,
-  NODE_TYPE_BLUE         = 1 << 8,
-  NODE_TYPE_HUE          = 1 << 9,
-  NODE_TYPE_HSV_SAT      = 1 << 10,
-  NODE_TYPE_HSL_SAT      = 1 << 11,
-  NODE_TYPE_VALUE        = 1 << 12,
-  NODE_TYPE_LIGHTNESS    = 1 << 13,
-  NODE_TYPE_LUMINOSITY   = 1 << 14,
+  NODE_TYPE_CONST        = 1 << 6,
+  NODE_TYPE_RED          = 1 << 7,
+  NODE_TYPE_GREEN        = 1 << 8,
+  NODE_TYPE_BLUE         = 1 << 9,
+  NODE_TYPE_HUE          = 1 << 10,
+  NODE_TYPE_HSV_SAT      = 1 << 11,
+  NODE_TYPE_HSL_SAT      = 1 << 12,
+  NODE_TYPE_VALUE        = 1 << 13,
+  NODE_TYPE_LIGHTNESS    = 1 << 14,
+  NODE_TYPE_LUMINOSITY   = 1 << 15,
 } NodeType;
 
 
